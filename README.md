@@ -109,7 +109,7 @@ Let's explain it separately in the following parts.
 
 We need to implement a new dataset to fulfill our purpose. The dataset is used to feed the data into the model.
 
-An example of this dataset is in [basicsrexamples/data/example_dataset.py](basicsrexamples/data/example_dataset.py). It has the following steps.
+An example of this dataset is in [basicsrexamples/data/example_dataset.py](mysr/data/example_dataset.py). It has the following steps.
 
 1. Read Ground-Truth (GT) images. BasicSR provides [FileClient](https://github.com/xinntao/BasicSR/blob/master/basicsr/utils/file_client.py) for easily reading files in a folder, LMDB file and meta_info txt. In this example, we use the folder mode. For more reading modes, please refer to [basicsr/data](https://github.com/xinntao/BasicSR/tree/master/basicsr/data)
 1. Synthesize low resolution images. We can directly implement the data procedures in the `__getitem__(self, index)` function, such as downsampling and adding JPEG compression. Many basic operations can be found in [[basicsr/data/degradations]](https://github.com/xinntao/BasicSR/blob/master/basicsr/data/degradations.py), [[basicsr/data/tranforms]](https://github.com/xinntao/BasicSR/blob/master/basicsr/data/transforms.py) ,and [[basicsr/data/data_util]](https://github.com/xinntao/BasicSR/blob/master/basicsr/data/data_util.py)
@@ -154,7 +154,7 @@ datasets:
 
 #### :two: arch
 
-An example of architecture is in [basicsrexamples/archs/example_arch.py](basicsrexamples/archs/example_arch.py). It mainly builds the network structure.
+An example of architecture is in [basicsrexamples/archs/example_arch.py](mysr/archs/My_arch.py). It mainly builds the network structure.
 
 **Note**:
 
@@ -177,7 +177,7 @@ network_g:
 
 #### :three: model
 
-An example of model is in [basicsrexamples/models/example_model.py](basicsrexamples/models/example_model.py). It mainly builds the training process of a model.
+An example of model is in [basicsrexamples/models/example_model.py](mysr/models/My_model.py). It mainly builds the training process of a model.
 
 In this file:
 1. We inherit `SRModel` from basicsr. Many models have similar operations, so you can inherit and modify from [basicsr/models](https://github.com/xinntao/BasicSR/tree/master/basicsr/models). In this way, you can easily implement your ideas, such as GAN model, video model, *etc*.
@@ -225,7 +225,7 @@ train:
 
 The whole training pipeline can reuse the [basicsr/train.py](https://github.com/xinntao/BasicSR/blob/master/basicsr/train.py) in BasicSR.
 
-Based on this, our [basicsrexamples/train.py](basicsrexamples/train.py) can be very concise:
+Based on this, our [basicsrexamples/train.py](mysr/train.py) can be very concise:
 
 ```python
 import os.path as osp
@@ -246,7 +246,7 @@ if __name__ == '__main__':
 So far, we have completed the development of our project. We can quickly check whether there is a bug through the `debug` mode:
 
 ```bash
-python basicsrexamples/train.py -opt options/example_option.yml --debug
+python mysr/train.py -opt options/example_option.yml --debug
 ```
 
 With `--debug`, the program will enter the debug mode. In the debug mode, the program will output at each iteration, and perform validation every 8 iterations, so that you can easily know whether the program has a bug~
@@ -256,7 +256,7 @@ With `--debug`, the program will enter the debug mode. In the debug mode, the pr
 After debugging, we can have the normal training.
 
 ```bash
-python basicsrexamples/train.py -opt options/example_option.yml
+python mysr/train.py -opt options/example_option.yml
 ```
 
 If the training process is interrupted unexpectedly and the resume is required. Please use `--auto_resume` in the command:
@@ -295,10 +295,10 @@ As the installation mode requires the package name, you also need to modify all 
 Here are the detailed locations that contain the `basicsrexamples` name:
 1. The `basicsrexamples` folder
 1. [setup.py](setup.py#L9); &emsp; [setup.py](setup.py#L48); &emsp;[setup.py](setup.py#L91)
-1. [basicsrexamples/train.py](basicsrexamples/train.py#L4-L6)
-1. [basicsrexamples/archs/\_\_init\_\_.py](basicsrexamples/archs/__init__.py#L11)
-1. [basicsrexamples/data/\_\_init\_\_.py](basicsrexamples/data/__init__.py#L11)
-1. [basicsrexamples/models/\_\_init\_\_.py](basicsrexamples/models/__init__.py#L11)
+1. [basicsrexamples/train.py](mysr/train.py#L4-L6)
+1. [basicsrexamples/archs/\_\_init\_\_.py](mysr/archs/__init__.py#L11)
+1. [basicsrexamples/data/\_\_init\_\_.py](mysr/data/__init__.py#L11)
+1. [basicsrexamples/models/\_\_init\_\_.py](mysr/models/__init__.py#L11)
 
 You also need to modify the corresponding information in the [setup.py](setup.py#L88-L113).
 
