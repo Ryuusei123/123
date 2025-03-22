@@ -20,21 +20,13 @@ def constant_init(module, val, bias=0):
 
 
 class DySample(nn.Module):  # DynamicUpsample
-    def __init__(self, in_channels, scale=2, style='lp', groups=4, dyscope=False):
+    def __init__(self, in_channels, scale=2, groups=4, dyscope=False):
         super().__init__()
         self.scale = scale
-        self.style = style
         self.groups = groups
-        assert style in ['lp', 'pl']
-        if style == 'pl':
-            assert in_channels >= scale ** 2 and in_channels % scale ** 2 == 0
         assert in_channels >= groups and in_channels % groups == 0
 
-        if style == 'pl':
-            in_channels = in_channels // scale ** 2
-            out_channels = 2 * groups
-        else:
-            out_channels = 2 * groups * scale ** 2
+        out_channels = 2 * groups * scale ** 2
 
         self.offset = nn.Conv2d(in_channels, out_channels, 1)
         normal_init(self.offset, std=0.001)
@@ -68,18 +60,8 @@ class DySample(nn.Module):  # DynamicUpsample
         else:
             offset = self.offset(x) * 0.25 + self.init_pos
         return self.sample(x, offset)
-
-    def forward_pl(self, x):
-        x_ = F.pixel_shuffle(x, self.scale)
-        if hasattr(self, 'scope'):
-            offset = F.pixel_unshuffle(self.offset(x_) * self.scope(x_).sigmoid(), self.scale) * 0.5 + self.init_pos
-        else:
-            offset = F.pixel_unshuffle(self.offset(x_), self.scale) * 0.25 + self.init_pos
-        return self.sample(x, offset)
-
+        
     def forward(self, x):
-        if self.style == 'pl':
-            return self.forward_pl(x)
         return self.forward_lp(x)
 
 
@@ -174,7 +156,7 @@ class EMA(nn.Module):  # Group-wise Multi-scale Hybrid Attention (GMHA)
         return out
 
 
-class DMlp(nn.Module):  # LFE
+class LFE(nn.Module):
     def __init__(self, dim, growth_rate=2.0):
         super().__init__()
         hidden_dim = int(dim * growth_rate)
@@ -196,7 +178,7 @@ class MyBlock(nn.Module):  # MHAB
     def __init__(self, n_feats, kernel_size, factor):
         super(MyBlock, self).__init__()
 
-        self.lde = DMlp(n_feats, 2)
+        self.lfe = LFE(n_feats, 2)
         self.ema = EMA(n_feats, factor=factor)  # 60-15 180-45
 
     def forward(self, x):
